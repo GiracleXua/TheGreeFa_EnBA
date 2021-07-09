@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  fmiVersion="2.0"
+  modelName="MyTestModel"
+  guid="{b1222747-fbcf-4a57-a872-ca16bd67d49a}"
+  generationTool="Dymola Version 2020 (64-bit), 2019-04-10 (requires license to execute)"
+  generationDateAndTime="2020-04-15T11:50:26Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="0">
+  <ModelExchange
+    modelIdentifier="MyTestModel"
+    canGetAndSetFMUstate="true"
+    canSerializeFMUstate="true"
+    providesDirectionalDerivative="true"/>
+  <TypeDefinitions>
+    <SimpleType
+      name="Modelica.Blocks.Interfaces.RealInput">
+      <Real/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Blocks.Interfaces.RealOutput">
+      <Real/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Blocks.Types.Extrapolation">
+      <Enumeration>
+        <Item name="HoldLastPoint"
+          value="1"
+          description="Hold the first/last table point outside of the table scope"/>
+        <Item name="LastTwoPoints"
+          value="2"
+          description="Extrapolate by using the derivative at the first/last table points outside of the table scope"/>
+        <Item name="Periodic"
+          value="3"
+          description="Repeat the table scope periodically"/>
+        <Item name="NoExtrapolation"
+          value="4"
+          description="Extrapolation triggers an error"/>
+      </Enumeration>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Blocks.Types.Smoothness">
+      <Enumeration>
+        <Item name="LinearSegments"
+          value="1"
+          description="Table points are linearly interpolated"/>
+        <Item name="ContinuousDerivative"
+          value="2"
+          description="Table points are interpolated (by Akima splines) such that the first derivative is continuous"/>
+        <Item name="ConstantSegments"
+          value="3"
+          description="Table points are not interpolated, but the value from the previous abscissa point is returned"/>
+        <Item name="MonotoneContinuousDerivative1"
+          value="4"
+          description="Table points are interpolated (by Fritsch-Butland splines) such that the monotonicity is preserved and the first derivative is continuous"/>
+        <Item name="MonotoneContinuousDerivative2"
+          value="5"
+          description="Table points are interpolated (by Steffen splines) such that the monotonicity is preserved and the first derivative is continuous"/>
+      </Enumeration>
+    </SimpleType>
+  </TypeDefinitions>
+  <DefaultExperiment startTime="0.0"
+    stopTime="1.0"
+    tolerance="0.0001"/>
+  <ModelVariables>
+    <!-- Index for next variable = 1 -->
+    <ScalarVariable
+      name="combiTable2D.u1"
+      valueReference="436207616"
+      description="Connector of Real input signal 1">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 2 -->
+    <ScalarVariable
+      name="combiTable2D.u2"
+      valueReference="436207617"
+      description="Connector of Real input signal 2">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 3 -->
+    <ScalarVariable
+      name="combiTable2D.y"
+      valueReference="335544320"
+      description="Connector of Real output signal">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 4 -->
+    <ScalarVariable
+      name="combiTable2D.tableOnFile"
+      valueReference="100663296"
+      description="= true, if table is defined on file or in function usertab"
+      variability="constant">
+      <Boolean start="true"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 5 -->
+    <ScalarVariable
+      name="combiTable2D.verboseRead"
+      valueReference="16777216"
+      description="= true, if info message that file is loading is to be printed"
+      causality="parameter"
+      variability="tunable">
+      <Boolean start="true"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 6 -->
+    <ScalarVariable
+      name="combiTable2D.smoothness"
+      valueReference="100663297"
+      description="Smoothness of table interpolation"
+      variability="constant">
+      <Enumeration
+        declaredType="Modelica.Blocks.Types.Smoothness"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 7 -->
+    <ScalarVariable
+      name="combiTable2D.extrapolation"
+      valueReference="100663298"
+      description="Extrapolation of data outside the definition range"
+      variability="constant">
+      <Enumeration
+        declaredType="Modelica.Blocks.Types.Extrapolation"
+        start="2"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 8 -->
+    <ScalarVariable
+      name="combiTable2D.verboseExtrapolation"
+      valueReference="100663299"
+      description="= true, if warning messages are to be printed if table input is outside the definition range"
+      variability="constant">
+      <Boolean start="false"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 9 -->
+    <ScalarVariable
+      name="combiTable2D.u_min[1]"
+      valueReference="100663300"
+      description="Minimum abscissa value defined in table"
+      variability="tunable">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 10 -->
+    <ScalarVariable
+      name="combiTable2D.u_min[2]"
+      valueReference="100663301"
+      description="Minimum abscissa value defined in table"
+      variability="tunable">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 11 -->
+    <ScalarVariable
+      name="combiTable2D.u_max[1]"
+      valueReference="100663302"
+      description="Maximum abscissa value defined in table"
+      variability="tunable">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 12 -->
+    <ScalarVariable
+      name="combiTable2D.u_max[2]"
+      valueReference="100663303"
+      description="Maximum abscissa value defined in table"
+      variability="tunable">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 13 -->
+    <ScalarVariable
+      name="u"
+      valueReference="352321536"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 14 -->
+    <ScalarVariable
+      name="u1"
+      valueReference="352321537"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 15 -->
+    <ScalarVariable
+      name="y"
+      valueReference="335544320"
+      causality="output">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="15"
+        dependencies="13 14"
+        dependenciesKind="dependent dependent"/>
+    </Outputs>
+    <InitialUnknowns>
+      <Unknown index="15"
+        dependencies="5 13 14"
+        dependenciesKind="dependent dependent dependent"/>
+    </InitialUnknowns>
+  </ModelStructure>
+</fmiModelDescription>

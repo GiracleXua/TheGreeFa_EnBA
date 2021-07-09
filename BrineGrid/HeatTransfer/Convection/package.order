@@ -1,0 +1,6 @@
+IdealHeatTransfer
+ConstantHeatTransferCoefficient
+ConstantNusseltNumber
+LocalPipeFlowHeatTransfer
+PlateDetailedFlow
+Absorption

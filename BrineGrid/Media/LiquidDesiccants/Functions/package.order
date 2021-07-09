@@ -1,0 +1,9 @@
+diffusionCoefficientWaterAir
+diffusivityWaterVaporAir
+diffusionCoefficientWaterLiCl
+massFractionToTotalHumidity
+selfDiffusionCoefficientWater
+totalHumidityToMassFraction
+MolalityToMassFraction
+MassFractionToMolality
+MolarEnthalpyToSpecificEnthalpy
