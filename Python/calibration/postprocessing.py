@@ -18,7 +18,7 @@ class EnBA_M_post_processing():
     important: for absorber and regenerator, the formula of Nu need to be changed according to different configuration (e.g., absorption, regeneration)
     """
 
-    def __init__(self, folder_name, file_name, if_cooling=True, point_exclude=[], base_path = os.path.join(os.path.expanduser("~"),"GIT","EnBA_M","BrineGrid_HDisNet", "modelica_results")):
+    def __init__(self, folder_name, file_name, if_cooling=True, point_exclude=[], base_path = os.path.join(os.path.expanduser("~"),"GIT","TheGreeFa_EnBA", "Results", "modelica")):
         
         self.folder_name = folder_name
         self.file_name = file_name
