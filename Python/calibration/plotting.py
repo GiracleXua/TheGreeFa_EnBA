@@ -19,13 +19,16 @@ import matplotlib.pyplot as plt
 # 4. optimize function plot_with_des_point_df with on/off at plotting 3rd point
 
 
-# adapted function by rotem for color distinction
 def plot_psy_from_df_rotem(df_data, chart_template = 'ashrae', alpha = 0.6, save_fig_name = False, ncol = 2, use_line_highlight = False):
     
-    # df_data is a pandas dataframe, for example, read directly from table of expertiment data.
-    
+    """
+    adapted function by rotem for color distinction, isn't cleaned yet, no recommended to use this
+
+    df_data is a pandas dataframe, for example, read directly from table of expertiment data.
+    """
     # pre-configuration
     # Get a pre-configured style dict
+
     config_ashrae = load_config(chart_template)
     config_ashrae['chart_params']['with_constant_wet_temp'] = False
     config_ashrae['chart_params']['constant_temp_label'] = None
@@ -69,8 +72,8 @@ def plot_psy_from_df_rotem(df_data, chart_template = 'ashrae', alpha = 0.6, save
                 for k in range(len(array_colors)):#this loop runs on all the colors that were used so far 
                     similar=0
                     for j in range(3):#this loop runs on the three different color values
-#**************************IF YOU RUN A PROGRAMM WITH MORE THAN 24 VALUES YOU WILL NEED TO MAKE THE VALUES IN******************** 
-#**************************(0.25+/-array_colors[k][j]))SMALLER THAN 0.25, OTHERWISE IT WILL NOT STOP RUNNING*********************
+    #**************************IF YOU RUN A PROGRAMM WITH MORE THAN 24 VALUES YOU WILL NEED TO MAKE THE VALUES IN******************** 
+    #**************************(0.25+/-array_colors[k][j]))SMALLER THAN 0.25, OTHERWISE IT WILL NOT STOP RUNNING*********************
                         if (color[j]<(0.25+array_colors[k][j])) and (color[j]>(array_colors[k][j]-0.25)):
                             similar+=1#a test value for color who is too similar to a previews colors 
                     if similar==3: break
@@ -113,6 +116,83 @@ def plot_psy_from_df_rotem(df_data, chart_template = 'ashrae', alpha = 0.6, save
     # Add a legend
     chart_customized_ashrae.plot_legend(markerscale=.7, frameon=False, fontsize=8, labelspacing=1.2, ncol = ncol)
     
+    if save_fig_name:
+        ax.get_figure().savefig(save_fig_name)
+    
+    return ax.get_figure()
+
+# plot only the air status
+def plot_air_state_df(df_data, chart_template = 'ashrae', alpha = 0.6, ncol = 3, save_fig_name = False, use_line_highlight = False, if_legend = True):
+    
+    # pre-configuration
+    # Get a pre-configured style dict
+    config_ashrae = load_config(chart_template)
+
+    # customize configuration:
+    config_ashrae['chart_params']['with_constant_wet_temp'] = False
+    config_ashrae['chart_params']['constant_temp_label'] = None
+    config_ashrae['chart_params']['constant_h_label'] = None
+    config_ashrae['chart_params']['constant_v_label'] = None
+    config_ashrae['chart_params']['constant_humid_label'] = None
+    config_ashrae['chart_params']['constant_rh_label'] = None
+
+    chart_customized_ashrae = PsychroChart(config_ashrae, use_line_highlight = use_line_highlight)
+    # Plot the chart
+    ax = chart_customized_ashrae.plot()
+    
+    points = {}
+    connectors = []
+    for i in df_data.index:
+        
+        # inlet
+        air_in = 'air_in_{}'.format(i)
+        T_air_in = df_data.loc[i, "T_a_in"]
+        rh_air_in = df_data.loc[i, "RH_a_in"]        
+        
+        # outlet
+        air_out = 'air_out_{}'.format(i)
+        T_air_out = df_data.loc[i, "T_a_o_exp"]
+        rh_air_out = df_data.loc[i, "RH_a_o_exp"]
+        
+        # color
+        color = np.append(np.random.rand(3), alpha)
+        print(color)
+        
+        # plot points
+        point = {air_in: {'label': 'air_in_{}'.format(i),
+                           'style': {'color': color,
+                                     'marker': 'X', 'markersize': 15},
+                           'xy': (T_air_in-273.15, rh_air_in)},
+                  air_out: {
+                      'label': 'air_out_{}'.format(i),
+                      'style': {'color': color,
+                                'marker': 'o', 'markersize': 10},
+                      'xy': (T_air_out-273.15, rh_air_out)},
+                }
+        
+        # plot connectors
+        # here the color CANNOT be specified by string e.g. red...
+        connector = {'start': air_in,
+                       'end': air_out,
+                       'style': {'color': color,
+                                 "linewidth": 2, "linestyle": "-."}}
+        
+        # add into dict and list
+        points.update(point)
+        connectors.append(connector)
+        
+    # add points and conncection to chart
+    chart_customized_ashrae.plot_points_dbt_rh(points, connectors)
+
+    # Add a legend
+    if if_legend:
+        if chart_template == 'ashrae':
+            chart_customized_ashrae.plot_legend(markerscale=.7, frameon=False, fontsize=8, labelspacing=1.2, ncol = ncol)
+        if chart_template == 'minimal':
+            chart_customized_ashrae.plot_legend(markerscale=1.2, frameon=False, fontsize=10, labelspacing=1.2, ncol = ncol)
+        else:
+            chart_customized_ashrae.plot_legend(markerscale=.7, frameon=False, fontsize=8, labelspacing=1.2, ncol = ncol)
+    plt.tight_layout()
     if save_fig_name:
         ax.get_figure().savefig(save_fig_name)
     
@@ -204,3 +284,29 @@ def plot_with_des_point_df(df_data, chart_template = 'ashrae', alpha = 0.6, ncol
         ax.get_figure().savefig(save_fig_name)
     
     return ax.get_figure()
+
+def plot_compare_2_cols(col1, col2, deviation = 0.2, x_label = 'x', y_label = 'y', save_fig = None):
+    fig, ax = plt.subplots(figsize=(6,6))
+
+    max_v = max(col1)*1.2
+    min_v = min(col1)*0.5
+    x = np.linspace(min_v, max_v, 10)
+    y1 = x* (1-deviation)
+    y2 = x* (1+deviation)
+
+    origin_line = ax.plot(x, x, c = 'black')
+    min_dev = ax.plot(x, y1, c = 'black')
+    max_dev = ax.plot(x, y2, c = 'black')
+    data_point = ax.scatter(col1, col2)
+
+    plt.xlim([min_v, max_v])
+    plt.ylim([min_v, max_v])
+    ax.set_xlabel(x_label, fontsize = 20)
+    ax.set_ylabel(y_label, fontsize = 20)
+    ax.tick_params(axis='x', rotation=45)
+    ax.tick_params(axis='y', rotation=-45)
+    fig.tight_layout()
+    
+    if save_fig is not None:
+        fig.savefig('{}.png'.format(save_fig), dpi=300)
+    return

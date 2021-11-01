@@ -18,20 +18,21 @@ class EnBA_M_post_processing():
     important: for absorber and regenerator, the formula of Nu need to be changed according to different configuration (e.g., absorption, regeneration)
     """
 
-    def __init__(self, folder_name, file_name, postfix = '', if_cooling=True, point_exclude=[], base_path = os.path.join(os.path.expanduser("~"),"GIT","EnBA_M","BrineGrid_HDisNet", "modelica_results")):
+    def __init__(self, folder_name, file_name, if_cooling=True, point_exclude=[], base_path = os.path.join(os.path.expanduser("~"),"GIT","EnBA_M","BrineGrid_HDisNet", "modelica_results")):
+        
         self.folder_name = folder_name
         self.file_name = file_name
-        self.postfix = postfix
         self.base_path = base_path
         self.if_cooling = if_cooling
         self.point_exclude = point_exclude
 
     ## read data from calibration output
-    def generate_regression_input(self, sorted_by = None, if_cooling = True, if_log=True, point_exclude = [], critera = 2,):
+    def generate_regression_input(self, input_path = None, sorted_by = None, if_cooling = True, if_log=True, point_exclude = [], critera = 2,):
         
-        input_path = os.path.join(self.base_path, self.folder_name, self.file_name)
+        if input_path is None:
+            input_path = os.path.join(self.base_path, self.folder_name, self.file_name)
+
         df_input_raw = pd.read_csv(filepath_or_buffer=input_path, index_col=0).drop(point_exclude)
-        postfix = self.postfix
 
         if if_cooling:
             df_input = df_input_raw.query("(T_a_in - T_d_in) >{}".format(critera))
@@ -83,7 +84,8 @@ class EnBA_M_post_processing():
         T_d = variables['T_d_in'].to_numpy()
         T_a = variables['T_a_in'].to_numpy()
         # np.power(Re, b) * 
-        Nu = a * np.power(Re, b) * np.power(Pr, c) * np.power((m_d/m_a), d) * np.power((1-w_d/w_a), e) * np.power((T_d-273.15)/(T_a-273.15), f) # adjusted for regeneration
+        Nu = a * np.power(Re, b) * np.power(Pr, 1/3) * np.power((m_d/m_a), d) * np.power((1-w_d/w_a), e) * np.power((T_d-273.15)/(T_a-273.15), f) 
+        # if used for regeneration, the forth term should be corrected as (w_d/w_a-1), as in that case, w_d should greater than w_a
         
         return Nu
 
@@ -96,19 +98,23 @@ class EnBA_M_post_processing():
         w_a = variables['x_a_in'].to_numpy()
         T_d = variables['T_d_in'].to_numpy()
         T_a = variables['T_a_in'].to_numpy()
-        # np.power(Re, b) *
-        Sh = a * np.power(Re, b) * np.power(Sc, c) * np.power((m_d/m_a), d) * \
+        Sh = a * np.power(Re, b) * np.power(Sc, 1/3) * np.power((m_d/m_a), d) * \
         np.power((1-w_d/w_a), e) * np.power((T_d-273.15)/(T_a-273.15), f)
         
         return Sh
 
     # regression algorithmus
 
-    def regr_via_scipy(self, df, target, p0 = [1, 1.8, 1/3, -1, 0.8, 0.4], iter_num = 2000):
+    def regr_via_scipy(self, df, target, p0 = [1,1,1,1,1,1], sigma_ratio = None, abs_sigma = False, iter_num = 2000, method = 'lm'):
+        # [1, 1.8, 1/3, -1, 0.8, 0.4]
+        if sigma_ratio is not None:
+            sigma = df[target].to_numpy()*sigma_ratio        
+        else:
+            sigma = None
         if target[0:2] == "Nu":
-            results = scipy.optimize.curve_fit(self.func_Nu, df, df[target].to_numpy(), p0=p0, maxfev = iter_num)
+            results = scipy.optimize.curve_fit(self.func_Nu, df, df[target].to_numpy(), p0=p0, sigma = sigma, absolute_sigma = abs_sigma, maxfev = iter_num, method = method)
         elif target[0:2] == "Sh":
-            results = scipy.optimize.curve_fit(self.func_Sh, df, df[target].to_numpy(), p0=p0, maxfev = iter_num)
+            results = scipy.optimize.curve_fit(self.func_Sh, df, df[target].to_numpy(), p0=p0, sigma = sigma, absolute_sigma = abs_sigma, maxfev = iter_num, method = method)
         else:
             print("Target can only be 'Nu' or 'Sh'.")
         return results[0]
@@ -183,7 +189,6 @@ class EnBA_M_post_processing():
 
         if target[0:2] == "Nu":
             results_from_regr = self.func_Nu(df_input, param[0], param[1], param[2], param[3], param[4], param[5])#, param[5]
-
         elif target[0:2] == "Sh": 
             results_from_regr = self.func_Sh(df_input, param[0], param[1], param[2], param[3], param[4], param[5])#, param[5]
         else: 
@@ -191,7 +196,6 @@ class EnBA_M_post_processing():
 
         df_compare = pd.DataFrame(list(zip(df_input[target], results_from_regr)), columns=['simulation', 'regression'])
         df_compare["index_ori"] = df_input.index
-
 
         # # calculate R_squared
         R_squared_train = self.calc_R_squared(data_ref=df_selected[target], data_cal=results_from_regr[:num_training])
@@ -227,7 +231,9 @@ class EnBA_M_post_processing():
                                         Nu_num_training, Nu_if_sorted, \
                                         Sh_num_training, Sh_if_sorted, \
                                         physical_Nu_Sh = False, if_plot=False, max_iter=50000):
-
+        """
+        physical_Nu_Sh should be kept as False in most of the cases
+        """
         df_export = self.generate_regression_input(if_log = False, if_cooling=self.if_cooling, point_exclude = self.point_exclude,)
         
         if physical_Nu_Sh:
@@ -254,17 +260,12 @@ class EnBA_M_post_processing():
         return df_export
 
 if __name__ == "__main__":
-    # obj_regression = EnBA_M_post_processing(folder_name = "Sep_29_teststand", file_name = "final_output_teststand.csv")
 
-    # obj_regression = EnBA_M_post_processing(folder_name = "Sep_29_dempav", file_name = "final_output_dempav.csv")
-
-    # obj_regression = EnBA_M_post_processing(folder_name = "Okt_1_teststand", file_name = "final_output.csv")
-    
-    obj_regression = EnBA_M_post_processing(folder_name = "Chen_fomular_Nu_Sh_Mar_06", file_name = "cleaned.csv") #, point_exclude=[17,6]
+    obj_regression = EnBA_M_post_processing(folder_name = "2021_oct_Calibration_Chen_2016", file_name = "final_output.csv") #, point_exclude=[17,6]
 
     # df_compare = obj_regression.run_regression_and_compare(target="Nu", sorted=True, method="scikitlearn", num_training=20, num_max_iter=20000, if_plot=True)
     # print(df_compare)
 
-    obj_regression.run_regression_generate_results(method="scipy", Nu_num_training=30, Nu_if_sorted=True, Sh_num_training=30, Sh_if_sorted=True, physical_Nu_Sh=False, if_plot=True, max_iter=100000)
+    obj_regression.run_regression_generate_results(method="scipy", Nu_num_training=14, Nu_if_sorted=True, Sh_num_training=14, Sh_if_sorted=True, physical_Nu_Sh=False, if_plot=True, max_iter=100000)
 
     print("post processing finished")

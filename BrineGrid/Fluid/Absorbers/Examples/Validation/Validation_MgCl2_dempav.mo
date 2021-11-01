@@ -19,11 +19,11 @@ model Validation_MgCl2_dempav
       flowConf=BrineGrid.Fluid.Absorbers.Choices.FlowConfiguration.CounterCurrent,
       energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial,
       redeclare model ThermalAir =
-          HeatTransfer.Convection.Absorption.ConstantNusseltNumber_Absorption(Nu0 = Nu),
+          HeatTransfer.Convection.Absorption.Nu_EnBA_M_dempav,
       redeclare model MoistureAir =
-          MoistureTransfer.Convection.Absorption.ConstantSherwoodNumber(Sh0 = Sh)));
+          MoistureTransfer.Convection.Absorption.Sh_EnBA_M_dempav));
 
-  parameter Real simulation_id = 66;
+  parameter Real simulation_id = 166;
   parameter Modelica.SIunits.NusseltNumber Nu = 5.1;
   parameter Modelica.SIunits.NusseltNumberOfMassTransfer Sh = 6.7;
   annotation (experiment(StopTime=1800, __Dymola_Algorithm="Dassl"));

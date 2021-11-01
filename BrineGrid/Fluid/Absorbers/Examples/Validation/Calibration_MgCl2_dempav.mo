@@ -14,7 +14,7 @@ model Calibration_MgCl2_dempav "calibration model for MgCl2"
     abs(
       redeclare Data.Mg_dempav                                         data,
       flowConf=BrineGrid.Fluid.Absorbers.Choices.FlowConfiguration.CounterCurrent,
-      energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial,
+      energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial,
       redeclare model ThermalAir =
           HeatTransfer.Convection.Absorption.ConstantNusseltNumber_Absorption (Nu0=Nu),
       redeclare model MoistureAir =

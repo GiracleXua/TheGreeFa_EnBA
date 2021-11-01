@@ -53,7 +53,7 @@ class Calibration_H_M_transfer():
         prefix_outputfolder = "",\
         if_Nu_Sh_const = True,
         if_use_alpha_beta = False,
-    ):
+        ):
         """
         cross_area: cross area of air flow
         d_e: charateristic length of air flow
@@ -186,19 +186,21 @@ class Calibration_H_M_transfer():
         
         # initialize variables
         Nu = Sh = alpha = beta = 0
-
-        if not if_use_alpha_beta:
-            if len(header_of_input) != 0: # read Nu Sh from input table
-                Nu = input_param["Nu"+header_of_input]
-                Sh = input_param["Sh"+header_of_input]
-            elif Nu_input is not None and Sh_input is not None: # use input variables
-                Nu = Nu_input,
-                Sh = Sh_input
+        if if_Nu_Sh_const:
+            if not if_use_alpha_beta:
+                if len(header_of_input) != 0: # read Nu Sh from input table
+                    Nu = input_param["Nu"+header_of_input]
+                    Sh = input_param["Sh"+header_of_input]
+                elif Nu_input is not None and Sh_input is not None: # use input variables
+                    Nu = Nu_input,
+                    Sh = Sh_input
+                else:
+                    raise ValueError('no input of Nu and Sh, check input')
             else:
-                raise ValueError('no input of Nu and Sh, check input')
+                alpha = input_param["alpha"+header_of_input]
+                beta = input_param["beta"+header_of_input]
         else:
-            alpha = input_param["alpha"+header_of_input]
-            beta = input_param["beta"+header_of_input]
+            print("no Nu/Sh input from the input table, calculation formular or defaut value in modelica is used")
 
         self.run_simulation(input_data=input_param, \
                         Nu0=Nu, Sh0=Sh, \

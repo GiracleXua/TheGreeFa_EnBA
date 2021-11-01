@@ -20,8 +20,7 @@ To know more about the project, please visit our project website:
 
 ### Dependencies
 
-TEASER is currently tested against Python 3.8. Older versions of Python may still work, but are no longer actively supported.
-Using a Python distribution is recommended as they already contain (or easily support installation of) many Python packages (e.g. SciPy, NumPy, pip, PyQT, etc.) that are used in the code. Two examples of those distributions are:
+The simulation tool is developed and tested with Python 3.8. Older versions of Python may still work, but are no longer actively supported. Using a Python distribution is recommended as they already contain (or easily support installation of) many Python packages (e.g. SciPy, NumPy, pip, PyQT, etc.) that are used in the code. Two examples of those distributions are:
 
 1. https://winpython.github.io/ WinPython comes along with a lot of Python
 packages (e.g. SciPy, NumPy, pip, PyQT, etc.)..
@@ -32,16 +31,30 @@ between them.
 
 In addition, The code requires some specific Python packages:
 
-1. pandas: popular data analysis library
-  install on a python-enabled command line with `pip install -U pandas`
-2. CoolProp: thermodynamic calculation of different gas and fluids
-  install on a python-enabled command line with `pip install -U CoolProp`
-3. psychrolib: psychrometrics of moist air
-  install on a python-enabled command line with `pip install -U psychrolib`
-4. psychrochart: plot psychrometric charts in python
-  install on a python-enabled command line with `pip install -U psychrochart`
-5. buildingspy: python modelica interface
-  install on a python-enabled command line with `pip install -U buildingspy`
+1. pandas: popular data analysis library.
 
-### Related publications
+    install on a python-enabled command line with `pip install -U pandas`
+
+2. CoolProp: thermodynamic calculation of different gas and fluids.
+
+    install on a python-enabled command line with `pip install -U CoolProp`
+
+3. psychrolib: psychrometrics of moist air.
+
+    install on a python-enabled command line with `pip install -U psychrolib`
+
+4. psychrochart: plot psychrometric charts in python.
+
+    install on a python-enabled command line with `pip install -U psychrochart`
+
+5. buildingspy: python modelica interface.
+
+    install on a python-enabled command line with `pip install -U buildingspy`
+
+The absorber model is a standalone Modelica-package, which could be run independently, however, the system-level model applied model from an open-source Modelica library developed by Lawrence Berkeley National Laboratory. The library can be downloaded from: 
+  * https://simulationresearch.lbl.gov/modelica/download.html/
+
+To run system-level simulation, the library need to be loaded in Dymola first.
+
+## Related publications
 to be filled.

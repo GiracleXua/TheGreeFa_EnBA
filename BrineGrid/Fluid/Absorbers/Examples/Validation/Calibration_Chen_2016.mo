@@ -3,24 +3,24 @@ model Calibration_Chen_2016
   extends BaseClasses.BaseValidation(
     redeclare final package Medium_b =
         Media.LiquidDesiccants.LithiumChlorideAqueousSolution_PatekKlomfar,
-    T_air=273.15 + 24.2,
-    T_abs=273.15 + 17.7,
-    x_a=0.016,
-    X_s=0.3007,
-    m_flow_air=1.98,
-    m_flow_abs=2.85,
-    mNodes = 10,
-    nNodes = 10,
+    T_air=273.15 + 25.6,
+    T_abs=273.15 + 14.9,
+    x_a=0.0162,
+    X_s=0.23,
+    m_flow_air=1.85,
+    m_flow_abs=2.61,
+    mNodes = 5,
+    nNodes = 5,
     abs(
       redeclare Data.Chen_2016                                          data,
       flowConf=BrineGrid.Fluid.Absorbers.Choices.FlowConfiguration.CrossCurrent,
       energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial,
       redeclare model ThermalAir =
-          HeatTransfer.Convection.Absorption.ConstantNusseltNumber_Absorption (Nu0=Nu),
+          HeatTransfer.Convection.Absorption.Nu_Chen,
       redeclare model MoistureAir =
-          MoistureTransfer.Convection.Absorption.ConstantSherwoodNumber (Sh0=Sh)));
+          MoistureTransfer.Convection.Absorption.Sh_Chen));
 
-  parameter Real simulation_id = 5;
+  parameter Real simulation_id = 99;
   parameter Modelica.SIunits.NusseltNumber Nu = 5.024;
   parameter Modelica.SIunits.NusseltNumberOfMassTransfer Sh = 3.7;
 

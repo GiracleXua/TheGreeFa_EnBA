@@ -15,7 +15,7 @@ extends BaseClasses.BaseValidation(
   mNodes=10,
   abs(
     redeclare Data.Chen_2016                                          data,
-      energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+      energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial,
     flowConf=BrineGrid.Fluid.Absorbers.Choices.FlowConfiguration.CounterCurrent,
     redeclare model ThermalAir =
       HeatTransfer.Convection.Absorption.RandomPackings_ChenZhangYin,

@@ -110,6 +110,7 @@ First implementation.
     Modelica.SIunits.NusseltNumber Nu "Nusselt number";
     Modelica.SIunits.PrandtlNumber Pr "Prandtl number";
     Modelica.SIunits.ReynoldsNumber Re "Reynolds number";
+    Real [6] param_Nu = {22.88192574, 0.57415072, 0.3333, -0.11888498, -0.25748867, 0.57245613};
   equation
     Pr = Fluid.Functions.CharacteristicNumbers.PrandtlNumber(
       eta=eta_a,
@@ -120,7 +121,7 @@ First implementation.
       eta=eta_a,
       L=deq,
       A=crossArea);
-    Nu = (8.5907e03)*(Re/2300)^(3.456e-02)*Pr^(1.2052e+01)*(m_flow_in_b/m_flow_in_a)^(-3.007e-01)*(1 - x_eq/x)^(-5.926e-01)*((T_b - 273.15)/(T_a - 273.15))^(9.591e-02);
+    Nu = (param_Nu[1])*(Re/2300)^(param_Nu[2])*Pr^(param_Nu[3])*(m_flow_in_b/m_flow_in_a)^(param_Nu[4])*(1-x_eq/x)^(param_Nu[5])*((T_b - 273.15)/(T_a - 273.15))^(param_Nu[6]);
     alpha = Fluid.Functions.CharacteristicNumbers.alpha_from_NusseltNumber(
       Nu=Nu,
       lambda=lambda_a,

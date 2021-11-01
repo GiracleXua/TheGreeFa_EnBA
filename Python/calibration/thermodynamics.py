@@ -240,7 +240,7 @@ def calc_Sc(T, w, P = 101325):
     # density of humid air
     rho = 1/HAPropsSI('Vha', 'T', T, 'P', P, 'W', w)
     # mass diffusivity
-    Diff = -2.775e-6 + 4.479e-8*T + 1.656e-10*T**2
+    Diff = 805/P/9.80665/3600*(T**1.8)/273.15 #-2.775e-6 + 4.479e-8*T + 1.656e-10*T**2
     Sc = mu/(rho * Diff) # re = rho * u *D / dynamic_viscosity
     return Sc
     

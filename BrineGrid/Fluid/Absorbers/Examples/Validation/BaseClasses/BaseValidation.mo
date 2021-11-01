@@ -5,7 +5,7 @@ partial model BaseValidation
   replaceable package Medium_a =
     Media.LiquidDesiccants.Air "Medium model for moist air";
   replaceable package Medium_b =
-    Media.LiquidDesiccants.MagnesiumChlorideAqueousSolution
+    Media.LiquidDesiccants.LithiumChlorideAqueousSolution_PatekKlomfar
     "Medium model for desiccant";
   //Media.LiquidDesiccants.LithiumChlorideAqueousSolution_PatekKlomfar
   //Media.LiquidDesiccants.MagnesiumChlorideAqueousSolution

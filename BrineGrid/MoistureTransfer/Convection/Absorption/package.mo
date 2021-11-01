@@ -49,7 +49,8 @@ package Absorption
     BrineGrid.SIunits.SherwoodNumber Sh "Sherwood number";
     Modelica.SIunits.SchmidtNumber Sc "Schmidt number";
     Modelica.SIunits.ReynoldsNumber Re "Reynolds number";
-    Real [6] param_sh = {4309.9719, 0.658951301, 1, 0.2357743, 2.29177314, 0.882075132};
+    Real [6] param_sh = {37.50582832, 1.65375097, 0.3333, 0.75740064, 1.30987467, 0.10190975};
+
   equation
     Sc = BrineGrid.Fluid.Functions.CharacteristicNumbers.SchmidtNumber(
       eta=eta_a,

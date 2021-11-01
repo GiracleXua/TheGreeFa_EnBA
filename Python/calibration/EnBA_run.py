@@ -20,7 +20,7 @@ def run_calib_LiCl(prefix_output):
     model_name = 'Calibration_Chen_2016'
     print("*****start {}******".format(model_name))
 
-    df = pd.read_excel("../exp_data/Chen2016.xlsx", index_col=0).loc[[1, 10, 11, 12, 2],:]
+    df = pd.read_excel(os.path.join(bib_path, "Extras", "Python", "exp_data", "actual_data", "Chen2016.xlsx"), index_col=0)
     print(df)
 
     # generate object for calibration class
@@ -72,19 +72,19 @@ def run_Chen2016_sim(prefix_output, file_name):
 
 def run_Chen_fomular_NuSh(prefix_output, file_name):
     # run simulation using implemented formular for Nu&Sh in Modelica #
-    model_name2 = 'LiCl_Chen_2016_Dehumdification'
-    print("*****start {}******".format(model_name2))
+    model_name = 'Calibration_Chen_2016'
+    print("*****start {}******".format(model_name))
 
     bib_path = os.path.join(os.path.expanduser("~"),"GIT",'EnBA_M',"BrineGrid_HDisNet")
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
-    df2 = pd.read_excel("../exp_data/{}".format(file_name),index_col = 0)
+    df2 = pd.read_excel("../exp_data/actual_data/{}".format(file_name),index_col = 0)
     print(df2)
 
     # # generate object for calibration class
     LiCl2_obj = Calibration_H_M_transfer(t_stop=1800, exchange_area=450*1.5*0.75*0.75, type_desiccant='LiCl',\
         d_e=0.01, cross_area = 1.5*0.75, void_fraction = 0.9, bib_path=bib_path, model_path = model_path, flow_config = 'cross', \
-        nNodes=10, mNodes=10, model_name=model_name2, prefix_outputfolder=prefix_output, if_Nu_Sh_const=False)
+        nNodes=10, mNodes=10, model_name=model_name, prefix_outputfolder=prefix_output, if_Nu_Sh_const=False)
 
     output_path = LiCl2_obj.get_output_folder()
     
@@ -96,7 +96,7 @@ def run_Chen_fomular_NuSh(prefix_output, file_name):
     df_output = LiCl2_obj.read_results(path=output_path, mode="simulation")
     df_output.to_csv(path_or_buf=os.path.join(output_path, 'final_output.csv'))
 
-    print('{} finished'.format(model_name2))
+    print('{} finished'.format(model_name))
     return
 
 ################## MgCl2 ##########################################################
@@ -110,11 +110,13 @@ def run_calib_MgCl2_dempav(prefix_output, file_name):
     bib_path = os.path.join(os.path.expanduser("~"),"GIT",'EnBA_M', "BrineGrid_HDisNet")
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
-    df2 = pd.read_excel("../exp_data/{}".format(file_name),index_col = 0) #.query('T_a_in - T_d_in > 5')
+    df2 = pd.read_excel("../exp_data/actual_data/dempav/{}".format(file_name),index_col = 0) .query('T_a_in - T_a_o_exp > 2')
     print(df2)
     
     # # generate object for calibration class
-    MgCl2_obj = Calibration_H_M_transfer(t_stop=3600, exchange_area=6.5, d_e=0.04, cross_area = 0.065, void_fraction = 0.95, delta_T = 0.5, bib_path=bib_path, model_path = model_path, nNodes=8, mNodes=8, model_name=model_name2, prefix_outputfolder=prefix_output)
+    MgCl2_obj = Calibration_H_M_transfer(t_stop=3600, exchange_area=6.5, d_e=0.04, cross_area = 0.065, \
+        void_fraction = 0.95, delta_T = 0.5, bib_path=bib_path, model_path = model_path, \
+            nNodes=8, mNodes=8, model_name=model_name2, prefix_outputfolder=prefix_output)
     
     output_path = MgCl2_obj.get_output_folder()
     print("output path is: {}.".format(output_path))
@@ -183,6 +185,35 @@ def run_MgCl2_sim_alpha_beta(prefix_output, file_name):
     
     # MgCl2_obj.run_single_simulation(input_dataset=df2.iloc[0,:])
     MgCl2_obj.mp_run(df=df2, mode="simulation", num_core=6)
+
+    df_output = MgCl2_obj.read_results(path=output_path, mode="simulation")
+    df_output.to_csv(path_or_buf=os.path.join(output_path, 'final_output.csv'))
+
+    print('{} finished'.format(model_name2))
+    return
+
+def run_MgCl2_dempav_sim_with_ChenFormular(prefix_output, file_name):
+    # # run MgCl2
+    model_name2 = 'Validation_MgCl2_dempav'
+    print("*****start {}******".format(model_name2))
+
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT", 'EnBA_M',"BrineGrid_HDisNet")
+    model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
+
+    df2 = pd.read_excel("../exp_data/actual_data/selected/{}".format(file_name),index_col = 0) .query('T_a_in - T_a_o_exp > 2')
+    print(df2)
+
+    # # generate object for calibration class
+    MgCl2_obj = Calibration_H_M_transfer(t_stop=3600, exchange_area=3.248, d_e=0.0254, cross_area = 0.065, void_fraction = 0.712, \
+        bib_path=bib_path, model_path = model_path, nNodes=8, mNodes=8, model_name=model_name2, \
+            prefix_outputfolder=prefix_output, if_Nu_Sh_const=False)
+
+    output_path = MgCl2_obj.get_output_folder()
+    
+    print("output path is: {}.".format(output_path))
+    
+    # MgCl2_obj.run_single_simulation(input_dataset=df2.iloc[0,:])
+    MgCl2_obj.mp_run(df=df2, mode="simulation", num_core=mp.cpu_count()-2)
 
     df_output = MgCl2_obj.read_results(path=output_path, mode="simulation")
     df_output.to_csv(path_or_buf=os.path.join(output_path, 'final_output.csv'))
@@ -334,15 +365,17 @@ if __name__ == "__main__":
     # parameter study
     
     ############# Chen2016 #################
+
+    # run_calib_LiCl('2021_oct_corrected_')
     # run_Chen2016_sim('Sim_using_itered_NuSh_', 'regression_chen.csv')
-    # run_calib_LiCl('2021Mar_05_calib_test')
-    # run_Chen_fomular_NuSh(prefix_output='Chen_fomular_Nu_Sh_Mar_06', file_name='Chen2016.xlsx')
+    # run_Chen_fomular_NuSh(prefix_output='Chen_regress_fomular_Nu_Sh_2021Nov_2_', file_name='Chen2016.xlsx')
 
     #################### dempav ##########################
-    run_calib_MgCl2_dempav("Mai_24_dempav_heating_", "data_2021/heating_2021.xlsx")
+    # run_calib_MgCl2_dempav("2021_oct_dempav_", "dempav_T_des_corrected.xlsx")
+    run_MgCl2_dempav_sim_with_ChenFormular("Dempav_regress_fomular_Nu_Sh_2021Nov_", "dempav_T_des_corrected.xlsx")
     # run_MgCl2_dempav_sim("2021_Jan_dempav_regression_test", "dempav_results_Aug_final_2020.xlsx")
     # run_MgCl2_sim_alpha_beta("2021_Mar_teststand_cooling_5_a_b_", "teststand_cool_5_a_b.xlsx")
-    print("teststand finished")
+    # print("teststand finished")
 
     ########## ZHAW ################
     # run_calib_MgCl2_ZHAW('2021_ZHAW_', 'ZHAW_data.xlsx')
@@ -354,3 +387,4 @@ if __name__ == "__main__":
 
     end_code = time.time()
     print('finished! Duration: {}'.format(pd.Timedelta(pd.offsets.Second(int(end_code - start_code)))))
+
