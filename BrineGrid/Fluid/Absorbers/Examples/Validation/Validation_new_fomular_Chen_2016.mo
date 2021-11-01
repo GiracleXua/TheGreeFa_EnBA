@@ -1,5 +1,5 @@
 within BrineGrid.Fluid.Absorbers.Examples.Validation;
-model Calibration_Chen_2016
+model Validation_new_fomular_Chen_2016
   extends BaseClasses.BaseValidation(
     redeclare final package Medium_b =
         Media.LiquidDesiccants.LithiumChlorideAqueousSolution_PatekKlomfar,
@@ -16,9 +16,9 @@ model Calibration_Chen_2016
       flowConf=BrineGrid.Fluid.Absorbers.Choices.FlowConfiguration.CrossCurrent,
       energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial,
       redeclare model ThermalAir =
-          HeatTransfer.Convection.Absorption.ConstantNusseltNumber_Absorption(Nu0 = Nu),
+          HeatTransfer.Convection.Absorption.Nu_Chen,
       redeclare model MoistureAir =
-          MoistureTransfer.Convection.Absorption.ConstantSherwoodNumber(Sh0=Sh)));
+          MoistureTransfer.Convection.Absorption.Sh_Chen));
 
   parameter Real simulation_id = 99;
   parameter Modelica.SIunits.NusseltNumber Nu = 5.024;
@@ -57,4 +57,4 @@ First implementation.
 </dd></dl>
 </html>"));
 
-end Calibration_Chen_2016;
+end Validation_new_fomular_Chen_2016;

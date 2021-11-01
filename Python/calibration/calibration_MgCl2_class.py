@@ -65,7 +65,7 @@ class Calibration_H_M_transfer():
         self.model_path = model_path
         self.model_name = model_name
         self.prefix_outputfolder = prefix_outputfolder
-        self.output_dir = os.path.join(bib_path, 'modelica_results', prefix_outputfolder + model_name)
+        self.output_dir = os.path.join(bib_path, 'Results', "modelica", prefix_outputfolder + model_name)
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 

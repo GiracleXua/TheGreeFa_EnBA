@@ -12,15 +12,15 @@ from calibration_MgCl2_class import Calibration_H_M_transfer
 import multiprocessing as mp
 
 ######## Chen LiCl################
-def run_calib_LiCl(prefix_output):
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT", 'EnBA_M', "BrineGrid_HDisNet")
+def run_calib_LiCl(prefix_output, file_name):
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT", 'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
     
     # run chen2016
     model_name = 'Calibration_Chen_2016'
     print("*****start {}******".format(model_name))
 
-    df = pd.read_excel(os.path.join(bib_path, "Extras", "Python", "exp_data", "actual_data", "Chen2016.xlsx"), index_col=0)
+    df = pd.read_excel(os.path.join(bib_path, "Data_input", "measurement", "actual_data_converted/{}".format(file_name)), index_col=0)
     print(df)
 
     # generate object for calibration class
@@ -46,10 +46,10 @@ def run_Chen2016_sim(prefix_output, file_name):
     model_name2 = 'Calibration_Chen_2016'
     print("*****start {}******".format(model_name2))
 
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'EnBA_M',"BrineGrid_HDisNet")
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
-    df2 = pd.read_csv("../exp_data/results/{}".format(file_name),index_col = 0)#.iloc[0:2, :]
+    df2 = pd.read_csv(os.path.join(bib_path, "Data_input", "measurement", "actual_data_converted/{}".format(file_name)),index_col = 0)#.iloc[0:2, :]
     print('shape of the input table {}. \n'.format(df2.shape))
 
     # # generate object for calibration class
@@ -72,13 +72,13 @@ def run_Chen2016_sim(prefix_output, file_name):
 
 def run_Chen_fomular_NuSh(prefix_output, file_name):
     # run simulation using implemented formular for Nu&Sh in Modelica #
-    model_name = 'Calibration_Chen_2016'
+    model_name = 'Validation_new_formular_Chen_2016'
     print("*****start {}******".format(model_name))
 
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'EnBA_M',"BrineGrid_HDisNet")
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
-    df2 = pd.read_excel("../exp_data/actual_data/{}".format(file_name),index_col = 0)
+    df2 = pd.read_excel(os.path.join(bib_path, "Data_input", "measurement", "actual_data_converted/{}".format(file_name)),index_col = 0)
     print(df2)
 
     # # generate object for calibration class
@@ -104,33 +104,33 @@ def run_Chen_fomular_NuSh(prefix_output, file_name):
 ###dempav###
 def run_calib_MgCl2_dempav(prefix_output, file_name):
     # # run MgCl2
-    model_name2 = 'Calibration_MgCl2_dempav'
-    print("*****start {}******".format(model_name2))
+    model_name = 'Calibration_MgCl2_dempav'
+    print("*****start {}******".format(model_name))
 
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'EnBA_M', "BrineGrid_HDisNet")
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
-    df2 = pd.read_excel("../exp_data/actual_data/dempav/{}".format(file_name),index_col = 0) .query('T_a_in - T_a_o_exp > 2')
-    print(df2)
+    df = pd.read_excel(os.path.join(bib_path, "Data_input", "measurement", "actual_data_converted/{}".format(file_name)),index_col = 0) .query('T_a_in - T_a_o_exp > 2')
+    print(df)
     
     # # generate object for calibration class
     MgCl2_obj = Calibration_H_M_transfer(t_stop=3600, exchange_area=6.5, d_e=0.04, cross_area = 0.065, \
         void_fraction = 0.95, delta_T = 0.5, bib_path=bib_path, model_path = model_path, \
-            nNodes=8, mNodes=8, model_name=model_name2, prefix_outputfolder=prefix_output)
+            nNodes=8, mNodes=8, model_name=model_name, prefix_outputfolder=prefix_output)
     
     output_path = MgCl2_obj.get_output_folder()
     print("output path is: {}.".format(output_path))
     
     try:
-        #MgCl2_obj.run_calibration(input_dataset=df2.iloc[8,:]) # single simulation
-        MgCl2_obj.mp_run(df=df2, num_core=8) #mp.cpu_count()- 4
+        MgCl2_obj.run_calibration(input_dataset=df.iloc[8,:]) # single simulation
+        # MgCl2_obj.mp_run(df=df, num_core=8) #mp.cpu_count()- 4
     except:
-        print('Calibration for {} + {} didn\'t completely finished.'.format(model_name2, file_name))
+        print('Calibration for {} + {} didn\'t completely finished.'.format(model_name, file_name))
 
     df_output = MgCl2_obj.read_results(path=output_path)
     df_output.to_csv(path_or_buf=os.path.join(output_path, 'final_output.csv'))
 
-    print('{} (dempav) finished'.format(model_name2))
+    print('{} (dempav) finished'.format(model_name))
     return
 
 def run_MgCl2_dempav_sim_Nu_Sh(prefix_output, file_name):
@@ -138,10 +138,10 @@ def run_MgCl2_dempav_sim_Nu_Sh(prefix_output, file_name):
     model_name2 = 'Validation_MgCl2_dempav'
     print("*****start {}******".format(model_name2))
 
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT", 'EnBA_M',"BrineGrid_HDisNet")
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT", 'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
-    df2 = pd.read_excel("../exp_data/{}".format(file_name),index_col = 0)
+    df2 = pd.read_excel(os.path.join(bib_path, "Data_input", "measurement", "actual_data_converted/{}".format(file_name)).format(file_name),index_col = 0)
     print(df2)
 
     # # generate object for calibration class
@@ -168,10 +168,10 @@ def run_MgCl2_sim_alpha_beta(prefix_output, file_name):
     model_name2 = 'Validation_MgCl2_teststand_chtc' # 'Validation_MgCl2_dempav_chtc'
     print("*****start {}******".format(model_name2))
 
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT", 'EnBA_M',"BrineGrid_HDisNet")
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
-    df2 = pd.read_excel("../exp_data/simulation_input/{}".format(file_name),index_col = 0)
+    df2 = pd.read_excel(os.path.join(bib_path, "Data_input", "measurement", "actual_data_converted/{}".format(file_name)),index_col = 0)
     print(df2)
 
     # # generate object for calibration class
@@ -197,10 +197,10 @@ def run_MgCl2_dempav_sim_with_ChenFormular(prefix_output, file_name):
     model_name2 = 'Validation_MgCl2_dempav'
     print("*****start {}******".format(model_name2))
 
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT", 'EnBA_M',"BrineGrid_HDisNet")
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
-    df2 = pd.read_excel("../exp_data/actual_data/selected/{}".format(file_name),index_col = 0) .query('T_a_in - T_a_o_exp > 2')
+    df2 = pd.read_excel(os.path.join(bib_path, "Data_input", "measurement", "actual_data_converted/{}".format(file_name)),index_col = 0) .query('T_a_in - T_a_o_exp > 2')
     print(df2)
 
     # # generate object for calibration class
@@ -227,7 +227,7 @@ def run_calib_MgCl2_teststand(prefix_output, file_name):
     model_name2 = 'Calibration_MgCl2_teststand'
     print("*****start {}******".format(model_name2))
 
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT","BrineGrid_HDisNet")
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
     df2 = pd.read_excel("../exp_data/{}".format(file_name),index_col = 0)
@@ -255,7 +255,7 @@ def run_MgCl2_teststand_sim(prefix_output, file_name):
     model_name2 = 'Validation_MgCl2_teststand'
     print("*****start {}******".format(model_name2))
 
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'EnBA_M', "BrineGrid_HDisNet")
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
     df2 = pd.read_excel("../exp_data/{}".format(file_name),index_col = 0)
@@ -282,7 +282,7 @@ def run_calib_MgCl2_ZHAW(prefix_output, file_name):
     model_name = 'Validation_ZHAW'
     print("*****start {}******".format(model_name))
 
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT", 'EnBA_M',"BrineGrid_HDisNet")
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
     df = pd.read_excel("../exp_data/actual_data/{}".format(file_name),index_col = 0)
@@ -315,7 +315,7 @@ def parameter_study_Nu(Nu):
     model_name = 'Calibration_MgCl2'
     print("*****start {}******".format(model_name))
 
-    bib_path = os.path.join(os.path.expanduser("~"),"GIT", 'EnBA_M', "BrineGrid_HDisNet")
+    bib_path = os.path.join(os.path.expanduser("~"),"GIT",'TheGreeFa_EnBA')
     model_path = 'BrineGrid.Fluid.Absorbers.Examples.Validation.'
 
     df2 = pd.read_excel("../exp_data/dempav_results_Aug_final_2020.xlsx")
@@ -371,8 +371,8 @@ if __name__ == "__main__":
     # run_Chen_fomular_NuSh(prefix_output='Chen_regress_fomular_Nu_Sh_2021Nov_2_', file_name='Chen2016.xlsx')
 
     #################### dempav ##########################
-    # run_calib_MgCl2_dempav("2021_oct_dempav_", "dempav_T_des_corrected.xlsx")
-    run_MgCl2_dempav_sim_with_ChenFormular("Dempav_regress_fomular_Nu_Sh_2021Nov_", "dempav_T_des_corrected.xlsx")
+    # run_calib_MgCl2_dempav("2021_oct_dempav_3_", "dempav_T_des_corrected.xlsx")
+    # run_MgCl2_dempav_sim_with_ChenFormular("Dempav_regress_fomular_Nu_Sh_2021Nov_", "dempav_T_des_corrected.xlsx")
     # run_MgCl2_dempav_sim("2021_Jan_dempav_regression_test", "dempav_results_Aug_final_2020.xlsx")
     # run_MgCl2_sim_alpha_beta("2021_Mar_teststand_cooling_5_a_b_", "teststand_cool_5_a_b.xlsx")
     # print("teststand finished")
